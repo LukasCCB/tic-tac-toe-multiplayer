@@ -8,7 +8,6 @@
                         class="place-self-stretch bg-gray-200 hover:bg-gray-300 transition-colors"></button>
                 <span v-else v-text="square === -1 ? 'X' : 'O'" class="text-4xl font-bold"></span>
 
-                <!--                {{ index }}-->
             </li>
         </menu>
 
@@ -53,7 +52,7 @@
 
             <li v-else class="flex items-center gap-2">
                 <span class="p-1.5 font-bold rounded bg-gray-200">O</span>
-                <span>Aguardando oponente...</span>
+                <span>Waiting Player...</span>
                 <span class="bg-yellow-500 size-2 rounded-full"></span>
             </li>
         </ul>
