@@ -14,19 +14,22 @@
         <Modal :show="gameFinished" @close="() => {}"> <!-- Desabilita o fechamento ao clicar fora -->
             <div class="p-6">
                 <div class="text-6xl font-bold text-center my-12 font-mono uppercase">
-                    <span v-if="winner === 'X'" class="text-green-600">
-                        X has won!
-                    </span>
+            <span v-if="winner === 'X'" class="text-green-600">
+                X has won!
+            </span>
                     <span v-if="winner === 'O'" class="text-green-600">
-                        O has won!
-                    </span>
+                O has won!
+            </span>
                     <span v-else class="text-orange-600">
-                        Stalemate!
-                    </span>
+                Stalemate!
+            </span>
                 </div>
                 <div class="text-center mt-8">
                     <button @click="resetGame()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                         Play Again
+                    </button>
+                    <button @click="$inertia.visit(route('dashboard'))" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded ml-4">
+                        Back to Games
                     </button>
                 </div>
             </div>
