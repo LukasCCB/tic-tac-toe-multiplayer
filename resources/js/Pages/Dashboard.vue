@@ -1,5 +1,5 @@
 <template>
-    <Head title="Dashboard" />
+    <Head title="Dashboard"/>
 
     <AuthenticatedLayout>
         <template #header>
@@ -19,19 +19,22 @@
                         <li v-for="game in games" :key="game.id" class="flex justify-between items-center px-2 py-1.5">
 
                             <span>
-                                #{{ game.id }} by {{ game.player_one.name}}
+                                #{{ game.id }} by {{ game.player_one.name }}
                             </span>
 
-                            <span v-if="game.player_one_id === page.props.auth.user.id" class="text-amber-600 font-semibold">
+                            <span v-if="game.player_one_id === page.props.auth.user.id"
+                                  class="text-amber-600 font-semibold">
                                 [My Room]
                             </span>
 
                             <Link v-if="game.player_one_id === page.props.auth.user.id && game.player_two_id === NULL"
-                                  :href="`/games/${game.id}`" method="get" as="button" class="hover:bg-gray-100 transition-colors p-2 rounded-md">
+                                  :href="`/games/${game.id}`" method="get" as="button"
+                                  class="hover:bg-gray-100 transition-colors p-2 rounded-md">
                                 Join Again
                             </Link>
 
-                            <Link v-else :href="route('games.join', game)" method="post" as="button" class="hover:bg-gray-100 transition-colors p-2 rounded-md">
+                            <Link v-else :href="route('games.join', game)" method="post" as="button"
+                                  class="hover:bg-gray-100 transition-colors p-2 rounded-md">
                                 Join Game
                             </Link>
 
@@ -58,8 +61,8 @@ Echo.private('lobby')
         games.value = games.value.filter((game) => game.id !== event.game.id);
 
         // Reload the page if there are less than 5 games
-        if (games.value.length < 5){
-            router.reload({ only: ['games'], onSuccess: () => games.value = props.games.data });
+        if (games.value.length < 5) {
+            router.reload({only: ['games'], onSuccess: () => games.value = props.games.data});
         }
 
     });

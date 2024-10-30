@@ -90,13 +90,13 @@ function handleImageError() {
                         >
                             <div id="screenshot-container" class="relative flex w-full flex-1 items-stretch">
                                 <img
-                                    src="/img.png"
+                                    src="/game.png"
                                     alt="Laravel documentation screenshot"
                                     class="aspect-video h-full w-full flex-1 rounded-[10px] object-top object-cover drop-shadow-[0px_4px_34px_rgba(0,0,0,0.06)] dark:hidden"
                                     @error="handleImageError"
                                 />
                                 <img
-                                    src="/img.png"
+                                    src="/game.png"
                                     alt="Laravel documentation screenshot"
                                     class="hidden aspect-video h-full w-full flex-1 rounded-[10px] object-top object-cover drop-shadow-[0px_4px_34px_rgba(0,0,0,0.25)] dark:block"
                                 />
@@ -166,10 +166,10 @@ function handleImageError() {
                         >
 
                             <div class="pt-3 sm:pt-5">
-                                <h2 class="text-xl font-semibold text-black dark:text-white">Buy This Code</h2>
+                                <h2 class="text-xl font-semibold text-black dark:text-white">Download This Source Code</h2>
 
                                 <p class="mt-4 text-sm/relaxed">
-                                    Buy this source code in full along with execution tutorials through the secure platform CodeCanYon.net
+                                    Buy this source code in full along with execution tutorials through the platform.
                                 </p>
                             </div>
 

@@ -64,11 +64,31 @@ class GameController extends Controller
         return to_route('games.show', $game);
     }
 
+    public function updateStatus (Request $request, Game $game)
+    {
+        $validated = $request->validate([
+            'gameId' => 'required|exists:games,id',
+            'playerWonId' => 'nullable|exists:users,id',
+            'winningLine' => 'nullable|int'
+        ]);
+
+        if ($validated['playerWonId'] === null || $validated['winningLine'] === null) {
+            return to_route('games.show', $game);
+        }
+
+        $game->update([
+            'status' => true,
+            'winner_id' => $validated['playerWonId'],
+            'winning_line' => $validated['winningLine']
+        ]);
+
+        return to_route('games.show', $game);
+    }
+
     /**
      * Display the specified resource.
      */
-    public
-    function show (Game $game)
+    public function show (Game $game)
     {
         $game->load('playerOne', 'playerTwo');
 
@@ -78,8 +98,7 @@ class GameController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public
-    function edit (Game $game)
+    public function edit (Game $game)
     {
         //
     }
@@ -87,8 +106,7 @@ class GameController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public
-    function update (Request $request, Game $game)
+    public function update (Request $request, Game $game)
     {
         $data = $request->validate([
             'state' => ['required', 'array', 'size:9'],
@@ -103,8 +121,7 @@ class GameController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public
-    function destroy (Game $game)
+    public function destroy (Game $game)
     {
         //
     }

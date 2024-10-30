@@ -6,7 +6,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
+Route::middleware('guest')->get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
@@ -29,5 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('games', GameController::class)->only(['index', 'store', 'update', 'show']);
     Route::post('games/{game}/join', [GameController::class, 'join'])->name('games.join');
 });
+
+Route::post('/games/{game}/updateStatus', [GameController::class, 'updateStatus'])->name('games.updateStatus');
 
 require __DIR__.'/auth.php';

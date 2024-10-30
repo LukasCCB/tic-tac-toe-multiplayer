@@ -19,6 +19,8 @@ class Game extends Model
         'match_fee',
         'status',
         'state',
+        'winner_id',
+        'winning_line',
     ];
 
     protected $casts = [
