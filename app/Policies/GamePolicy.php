@@ -34,12 +34,12 @@ class GamePolicy
 
     public function join (User $user, Game $game): bool
     {
-        // Se o usuário já está como player_one ou player_two, não faz nada e permite a entrada
+        // If the user is already as player_one or player_two, do nothing and allow entry
         if ($game->player_one_id === $user->id || $game->player_two_id === $user->id) {
             return true;
         }
 
-        // Se há um slot vazio (null), coloca o usuário nele
+        // If there is an empty slot (null), place the user in it
         if ($game->player_one_id === null) {
             $game->player_one_id = $user->id;
             $game->save();
@@ -50,9 +50,10 @@ class GamePolicy
             return true;
         }
 
-        // Se ambos os slots estão ocupados por outros jogadores, nega a entrada
+        // If both slots are occupied by other players, deny entry
         return false;
 
+        // Old code
         //return $game->player_one_id !== $user->id && $game->player_two_id === null;
     }
 

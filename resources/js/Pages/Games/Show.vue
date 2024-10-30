@@ -11,7 +11,7 @@
             </li>
         </menu>
 
-        <Modal :show="gameFinished" @close="() => {}"> <!-- Desabilita o fechamento ao clicar fora -->
+        <Modal :show="gameFinished" @close="() => {}">
             <div class="p-6">
                 <div class="text-6xl font-bold text-center my-12 font-mono uppercase">
             <span v-if="winner === 'X'" class="text-green-600">
@@ -80,8 +80,8 @@ const boardState = ref(props.game.state ?? [
 ]);
 
 const players = ref([]);
-const gameFinished = ref(false); // Estado que indica se o jogo terminou
-const winner = ref(''); // Indica o vencedor ('X', 'O' ou 'Stalemate')
+const gameFinished = ref(false); // game is ended
+const winner = ref(''); // ('X', 'O' or 'Stalemate')
 
 const page = usePage();
 const xTurn = computed(() => boardState.value.reduce((carry, value) => carry + value, 0) === 0);
@@ -129,12 +129,12 @@ const updateOpponent = () => {
 };
 
 const filterSquare = (index) => {
-    // Verifica se o jogo já terminou ou se não é o turno do usuário
+    // if the game is finished or it's not your turn
     if (gameFinished.value || !yourTurn.value) {
         return;
     }
 
-    // Verifica se o quadrado já foi preenchido
+    // if the square is already filled
     if (boardState.value[index] !== 0) {
         return;
     }
@@ -146,33 +146,34 @@ const filterSquare = (index) => {
 };
 
 const checkForVictory = () => {
-    // Verifica se "O" é vencedor
+
+    // Check if O is a winning line
     const winningLine = lines.map((line) => line.reduce((carry, index) => carry + boardState.value[index], 0))
         .find((sum) => Math.abs(sum) === 3);
 
     if (winningLine === -3) {
         winner.value = 'X';
-        gameFinished.value = true; // Marca o jogo como terminado
+        gameFinished.value = true; // Mark the game as finished
         return;
     }
 
     if (winningLine === 3) {
         winner.value = 'O';
-        gameFinished.value = true; // Marca o jogo como terminado
+        gameFinished.value = true;
         return;
     }
 
     if (!boardState.value.includes(0)) {
         winner.value = 'Stalemate';
-        gameFinished.value = true; // Marca o jogo como terminado
+        gameFinished.value = true;
         return;
     }
 };
 
 const resetGame = () => {
     boardState.value = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-    gameFinished.value = false; // Reinicia o estado do jogo para permitir novas jogadas
-    winner.value = ''; // Limpa o vencedor
+    gameFinished.value = false; // Reset the game state to allow replays
+    winner.value = ''; // Reset the winner
     updateOpponent();
 };
 
