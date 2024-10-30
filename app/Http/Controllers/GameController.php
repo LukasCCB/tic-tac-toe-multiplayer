@@ -12,12 +12,13 @@ class GameController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index (Request $request)
     {
         return inertia('Dashboard', [
             'games' => Game::with('playerOne')
-                ->whereNull('player_two_id')
-                ->where('player_one_id', '!=', $request->user()->id)
+                //->whereNull('player_two_id')
+                //->where('player_one_id', '!=', $request->user()->id)
+                ->where('status', false)
                 ->oldest()
                 ->simplePaginate(100)
         ]);
@@ -26,7 +27,7 @@ class GameController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create ()
     {
         //
     }
@@ -34,20 +35,29 @@ class GameController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store (Request $request)
     {
         $game = Game::create(['player_one_id' => $request->user()->id]);
 
         return to_route('games.show', $game);
     }
 
-    public function join(Request $request, Game $game)
+    public function join (Request $request, Game $game)
     {
         Gate::authorize('join', $game);
 
-        $game->update([
-            'player_two_id' => $request->user()->id,
-        ]);
+        if ($game->player_one_id === $request->user()->id || $game->player_two_id === $request->user()->id) {
+            GameJoined::dispatch($game);
+            return to_route('games.show', $game);
+        }
+
+        if ($game->player_one_id === null) {
+            $game->update(['player_one_id' => $request->user()->id]);
+        } elseif ($game->player_two_id === null) {
+            $game->update(['player_two_id' => $request->user()->id]);
+        } else {
+            return back()->withErrors(['msg' => 'Jogo já possui dois jogadores.']);
+        }
 
         GameJoined::dispatch($game);
 
@@ -57,7 +67,8 @@ class GameController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Game $game)
+    public
+    function show (Game $game)
     {
         $game->load('playerOne', 'playerTwo');
 
@@ -67,7 +78,8 @@ class GameController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Game $game)
+    public
+    function edit (Game $game)
     {
         //
     }
@@ -75,7 +87,8 @@ class GameController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Game $game)
+    public
+    function update (Request $request, Game $game)
     {
         $data = $request->validate([
             'state' => ['required', 'array', 'size:9'],
@@ -90,7 +103,8 @@ class GameController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Game $game)
+    public
+    function destroy (Game $game)
     {
         //
     }

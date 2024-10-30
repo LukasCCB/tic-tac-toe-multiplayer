@@ -11,29 +11,26 @@
             </li>
         </menu>
 
-<!--        <Modal @close="resetGame()" :show="gameState.hasEnded()">-->
-
-<!--            <div class="p-6">-->
-
-<!--                <div class="text-6xl font-bold text-center my-12 font-mono uppercase">-->
-
-<!--                    <span v-if="gameState.current() === gameStates.XWins" class="text-green-600">-->
-<!--                        X has won!-->
-<!--                    </span>-->
-
-<!--                    <span v-if="gameState.current() === gameStates.OWins" class="text-green-600">-->
-<!--                        O has won!-->
-<!--                    </span>-->
-
-<!--                    <span v-else class="text-orange-600">-->
-<!--                        Stalemate!-->
-<!--                    </span>-->
-
-<!--                </div>-->
-
-<!--            </div>-->
-
-<!--        </Modal>-->
+        <Modal :show="gameFinished" @close="() => {}"> <!-- Desabilita o fechamento ao clicar fora -->
+            <div class="p-6">
+                <div class="text-6xl font-bold text-center my-12 font-mono uppercase">
+                    <span v-if="winner === 'X'" class="text-green-600">
+                        X has won!
+                    </span>
+                    <span v-if="winner === 'O'" class="text-green-600">
+                        O has won!
+                    </span>
+                    <span v-else class="text-orange-600">
+                        Stalemate!
+                    </span>
+                </div>
+                <div class="text-center mt-8">
+                    <button @click="resetGame()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        Play Again
+                    </button>
+                </div>
+            </div>
+        </Modal>
 
         <ul class="max-w-sm mx-auto mt-6 space-y-2">
             <li class="flex items-center gap-2">
@@ -44,13 +41,17 @@
             </li>
 
             <li v-if="game.player_two" class="flex items-center gap-2">
+
                 <span class="p-1.5 font-bold rounded bg-gray-200"  :class="{ 'bg-green-200': !xTurn }" >O</span>
+
                 <span>{{ game.player_two.name }}</span>
+
                 <span :class="{ '!bg-green-500': players.find( ({id}) => id === game.player_two_id ) }"
                       class="bg-red-500 size-2 rounded-full"></span>
             </li>
 
             <li v-else class="flex items-center gap-2">
+
                 <span class="p-1.5 font-bold rounded bg-gray-200">O</span>
                 <span>Waiting Player...</span>
                 <span class="bg-yellow-500 size-2 rounded-full"></span>
@@ -62,10 +63,8 @@
 
 <script setup lang="ts">
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-//import { useGameState, gameStates } from "@/Composables/useGameState.js";
-
-import {router, usePage} from '@inertiajs/vue3';
-import {computed, onMounted, onUnmounted, ref} from "vue";
+import { router, usePage } from '@inertiajs/vue3';
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import Modal from "@/Components/Modal.vue";
 
 const props = defineProps(['game']);
@@ -78,17 +77,16 @@ const boardState = ref(props.game.state ?? [
 ]);
 
 const players = ref([]);
+const gameFinished = ref(false); // Estado que indica se o jogo terminou
+const winner = ref(''); // Indica o vencedor ('X', 'O' ou 'Stalemate')
 
 const page = usePage();
 const xTurn = computed(() => boardState.value.reduce((carry, value) => carry + value, 0) === 0);
 const yourTurn = computed(() => {
-
     if (props.game.player_one_id === page.props.auth.user.id){
         return xTurn.value;
     }
-
     return !xTurn.value;
-
 });
 
 // Winning lines
@@ -124,16 +122,20 @@ const updateOpponent = () => {
 
     channel.whisper('PlayerMadeMove', {
         state: boardState.value,
-    })
+    });
 };
 
 const filterSquare = (index) => {
-
-    if (!yourTurn.value) {
+    // Verifica se o jogo já terminou ou se não é o turno do usuário
+    if (gameFinished.value || !yourTurn.value) {
         return;
     }
 
-    // Check if the square is already filled
+    // Verifica se o quadrado já foi preenchido
+    if (boardState.value[index] !== 0) {
+        return;
+    }
+
     boardState.value[index] = xTurn.value ? -1 : 1;
 
     updateOpponent();
@@ -141,42 +143,41 @@ const filterSquare = (index) => {
 };
 
 const checkForVictory = () => {
-
-    // Check if "O" is winner
+    // Verifica se "O" é vencedor
     const winningLine = lines.map((line) => line.reduce((carry, index) => carry + boardState.value[index], 0))
         .find((sum) => Math.abs(sum) === 3);
 
     if (winningLine === -3) {
-        alert('X wins!');
-        // gameState.change(gameStates.XWins);
+        winner.value = 'X';
+        gameFinished.value = true; // Marca o jogo como terminado
         return;
     }
 
     if (winningLine === 3) {
-        alert('O wins!');
-        // gameState.change(gameStates.OWins);
+        winner.value = 'O';
+        gameFinished.value = true; // Marca o jogo como terminado
         return;
     }
 
     if (!boardState.value.includes(0)) {
-        alert('Stalemate!');
-        // gameState.change(gameStates.Stalemate);
+        winner.value = 'Stalemate';
+        gameFinished.value = true; // Marca o jogo como terminado
         return;
     }
-
-    // gameState.change(gameStates.InProgress);
 };
 
 const resetGame = () => {
     boardState.value = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-    // gameState.change(gameStates.InProgress);
+    gameFinished.value = false; // Reinicia o estado do jogo para permitir novas jogadas
+    winner.value = ''; // Limpa o vencedor
     updateOpponent();
 };
 
 onMounted(checkForVictory);
 
 onUnmounted(() => {
-    Echo.leave(`games.${props.game.id}`)
+    Echo.leave(`games.${props.game.id}`);
 });
 
 </script>
+

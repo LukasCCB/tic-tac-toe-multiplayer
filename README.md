@@ -9,8 +9,9 @@
 
 ### Screenshots
 
-![img.png](public/img.png)
 ![img_2.png](public/img_2.png)
+![dashboard.png](public/dashboard.png)
+![result.png](public/result.png)
 
 ---
 ## Project Features
